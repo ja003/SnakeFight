@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlaygroundField : MonoBehaviour
+public class PlaygroundField : GameBehaviour
 {
 	private int x;
 	private int y;
@@ -16,6 +16,11 @@ public class PlaygroundField : MonoBehaviour
 
 	public BodyPart bodyPart;
 	public MapObject mapObject;
+
+	[SerializeField]
+	private Texture texture;
+	[SerializeField]
+	private Texture textureSelected;
 
 	public void Init(int pX, int pY, Vector3 pPosition)
 	{
@@ -70,6 +75,11 @@ public class PlaygroundField : MonoBehaviour
 	internal bool IsEmty()
 	{
 		return bodyPart == null && mapObject == null;
+	}
+
+	internal void SetSelected(bool pValue)
+	{
+		rend.material.mainTexture = pValue ? textureSelected : texture;
 	}
 
 	public override string ToString()

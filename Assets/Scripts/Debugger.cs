@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+#pragma warning disable 0649
 
 public class Debugger : MonoBehaviour
 {
@@ -14,12 +15,12 @@ public class Debugger : MonoBehaviour
 	private NetworkManagerHUD networkHud;
 
 	[SerializeField]
-	private bool onePlayer;
-	public static bool OnePlayer;
+	private bool localDebug;
+	public static bool LocalDebug;
 
 	void Start()
     {
-		OnePlayer = onePlayer;
+		LocalDebug = localDebug;
 		if(hideDebugUI)
 		{
 			debugConsole.SetActive(false);

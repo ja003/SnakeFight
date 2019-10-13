@@ -14,37 +14,15 @@ public class Snake : MonoBehaviour
 	private BodyPart head => bodyParts[0];
 	private BodyPart tail => bodyParts.Count > 0 ? bodyParts[bodyParts.Count - 1] : null;
 
-	private int id;
+	public int Id { get; private set; }
+	public bool IsLocal { get; internal set; }
+
 	private NetworkMessanger networkMessanger;
-	private PlaygroundField target;
 
-	void Update()
-	{
-		if(NetworkMessanger.IsMultiplayer())
-		{
-			if(id == 1 && !networkMessanger.isServer)
-				return;
-			if(id == 2 && networkMessanger.isServer)
-				return;
-		}
+	public bool ActionsConfirmed;// { private set; get; }
 
-		EDirection dir = GetSnakeDirection(id);
-
-		if(dir != EDirection.None)
-		{
-			SetDirection(dir);
-		}
-
-		PlaygroundField targetField = GetTarget();
-		if(targetField != null)
-		{
-			SetTarget(targetField);
-		}
-
-		bool confirm = GetActionsConfirmed(id);
-		if(confirm)
-			ConfirmActions(true);
-	}
+	private ItemController itemController;
+	private PowerUpController powerUpController;
 
 	public void Heal(int pHealth)
 	{
@@ -56,28 +34,22 @@ public class Snake : MonoBehaviour
 		head.AddHealth(-pDamage);
 	}
 
-	private void SetTarget(PlaygroundField targetField)
-	{
-		Debug.Log($"{id} SetTarget {targetField}");
-		target = targetField;
-	}
+	
 
-	private PlaygroundField GetTarget()
+	public void CancelAction(EAction pAction)
 	{
-		if(Input.GetMouseButtonDown(id == 1 ? 0 : 1))
+		switch(pAction)
 		{
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			//Debug.DrawRay(ray.origin, ray.direction * 1000, Color.red, 1);
-
-			bool hitField = Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, Playground.layerMask);
-			if(hitField)
-			{
-				PlaygroundField field = hitInfo.collider.GetComponent<PlaygroundField>();
-				return field;
-			}
-
+			case EAction.Move:
+				SetDirection(EDirection.None);
+				break;
+			case EAction.Item:
+				itemController.OnCancelAction(pAction);
+				break;
+			case EAction.PowerUp:
+				powerUpController.OnCancelAction(pAction);
+				break;
 		}
-		return null;
 	}
 
 	internal void Kill()
@@ -86,48 +58,26 @@ public class Snake : MonoBehaviour
 		Debug.Log($"{this} got killed");
 	}
 
-	private static bool GetActionsConfirmed(int pSnakeId)
-	{
-		if(Input.GetKeyDown(pSnakeId == 1 || Debugger.OnePlayer ? KeyCode.E : KeyCode.Keypad9))
-		{
-			//Debug.Log($"player {pPlayer} confirmed");
-			return true;
-		}
-		return false;
-	}
-
-	private static EDirection GetSnakeDirection(int pSnake)
-	{
-		EDirection dir = EDirection.None;
-		if(Input.GetKeyDown(pSnake == 1 ? KeyCode.W : KeyCode.Keypad8))
-		{
-			dir = EDirection.Up;
-		}
-		else if(Input.GetKeyDown(pSnake == 1 ? KeyCode.D : KeyCode.Keypad6))
-		{
-			dir = EDirection.Right;
-		}
-		else if(Input.GetKeyDown(pSnake == 1 ? KeyCode.S : KeyCode.Keypad5))
-		{
-			dir = EDirection.Down;
-		}
-		else if(Input.GetKeyDown(pSnake == 1 ? KeyCode.A : KeyCode.Keypad4))
-		{
-			dir = EDirection.Left;
-		}
-
-		return dir;
-	}
-
 	internal void OnReceiveConfirmMessage(SnakeConfirmMessage pMessage)
 	{
 		SetDirection(pMessage.direction);
 		ConfirmActions(false);
 	}
 
-	public void Init(int pId, NetworkMessanger pNetworkMessanger, PlaygroundField playgroundField)
+	internal void AddItem(Item pItem)
 	{
-		id = pId;
+		itemController.AddItem(pItem);
+	}
+
+	internal void AddPowerUp(PowerUp pPowerUp)
+	{
+		powerUpController.AddPowerUp(pPowerUp);
+	}
+
+	public void Init(int pId, bool pIsLocal, NetworkMessanger pNetworkMessanger, PlaygroundField playgroundField, GameUI pUi)
+	{
+		Id = pId;
+		IsLocal = pIsLocal;
 		networkMessanger = pNetworkMessanger;
 		bodyParts = new List<BodyPart>();
 		for(int i = 0; i < bodyPartsCount; i++)
@@ -136,36 +86,48 @@ public class Snake : MonoBehaviour
 		}
 
 		PlaceAt(playgroundField);
+
+		itemController = new ItemController(this, pUi.ItemPanel, pUi.ActionPanel);
+		powerUpController = new PowerUpController(this, pUi.PowerUpPanel, pUi.ActionPanel);
 	}
 
-	internal void Evaluate()
+
+	internal void EvaluateMove()
 	{
 		Move();
 		Draw();
-		Attack();
 		ActionsConfirmed = false;
 	}
 
-	private void Attack()
+	public void EvaluateItem()
 	{
-		if(target == null)
-		{
-			//Debug.Log($"{id} doesnt attack");
-			return;
-		}
-		Debug.Log($"{id} attack");
-		target.bodyPart?.OnAttacked(10);
-		target = null;
+		itemController.Evaluate();
 	}
 
-	public bool ActionsConfirmed { private set; get; }
+	public void EvaluatePowerUp()
+	{
+		powerUpController.Evaluate();
+	}
+
+
+	public void OnEvaluationStart()
+	{
+		ActionsConfirmed = false;
+	}
+
+	public void OnEvaluationFinished()
+	{
+
+	}
+
+
 
 	private void ConfirmActions(bool pSendMessage)
 	{
 		//Debug.Log($"{this} ConfirmActions {pSendMessage}");
 		ActionsConfirmed = true;
 		if(pSendMessage)
-			networkMessanger.SendConfirmMessage(id, currentDirection);
+			networkMessanger.SendConfirmMessage(Id, currentDirection);
 	}
 
 	public void AddBodyPart()
@@ -187,9 +149,15 @@ public class Snake : MonoBehaviour
 		bodyParts.Add(newPart);
 	}
 
-	private EDirection currentDirection = EDirection.Right;
+	internal void SetTarget(PlaygroundField pTargetField)
+	{
+		itemController.SetTarget(pTargetField);
+	}
 
-	private void SetDirection(EDirection direction)
+	private EDirection currentDirection = EDirection.Right;
+	private EDirection lastDirection = EDirection.Right;
+
+	public void SetDirection(EDirection direction)
 	{
 		currentDirection = direction;
 	}
@@ -198,8 +166,9 @@ public class Snake : MonoBehaviour
 	{
 		if(currentDirection == EDirection.None)
 		{
-			Debug.LogError("Direction not set");
-			return;
+			currentDirection = lastDirection;
+			/*Debug.LogError("Direction not set");
+			return;*/
 		}
 		PlaygroundField target = head.field.GetNeighbour(currentDirection);
 
@@ -208,6 +177,7 @@ public class Snake : MonoBehaviour
 			target.bodyPart.nextPart?.Destroy();
 		}
 		head.Move(target);
+		lastDirection = currentDirection;
 	}
 
 	private void PlaceAt(PlaygroundField playgroundField)
@@ -230,7 +200,7 @@ public class Snake : MonoBehaviour
 
 	public override string ToString()
 	{
-		return $"Snake[{id}]";
+		return $"Snake[{Id}]";
 	}
 }
 
