@@ -2208,7 +2208,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -205, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3688125886055284368
@@ -3378,7 +3378,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46dbd3cab7211494ab99becf9bd07774, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiPanel: {fileID: 4170844306223751254}
   powerUpConfigs:
   - {fileID: 11400000, guid: c1f408ea43427df46913f87dda857dcd, type: 2}
   - {fileID: 11400000, guid: 07791392ee7067a41bdd2e5991418911, type: 2}
@@ -3517,10 +3516,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b097a57bfeb847e4bbaa82651945fb27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiPanel: {fileID: 7279766884257864425}
   itemConfigs:
   - {fileID: 11400000, guid: 2b99143e0fdfa5a43a8d8ce6576ddaf2, type: 2}
   - {fileID: 11400000, guid: 865ba2163e6dfbf479e8647f8614949e, type: 2}
+  itemUsables:
+  - {fileID: 2036967769255400678, guid: 18dc8335472fe9d4e8945f9b9e39b3a6, type: 3}
+  - {fileID: 2036967769255400678, guid: 128da133ba893bf4ebffae91910bfc27, type: 3}
+  projectiles:
+  - {fileID: 8555564077050410150, guid: 9f4ff87a3808ff649bb4052b7aedb4f2, type: 3}
+  - {fileID: 8555564077050410150, guid: 9f4ff87a3808ff649bb4052b7aedb4f2, type: 3}
 --- !u!1 &8126864427886812841
 GameObject:
   m_ObjectHideFlags: 0
@@ -4352,6 +4356,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: P_PlaygroundField
+      objectReference: {fileID: 0}
+    - target: {fileID: 4932371826325170729, guid: 8e02ab540225ffc4d8a90ba420213874,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1284517520053484383, guid: 8e02ab540225ffc4d8a90ba420213874,
         type: 3}
