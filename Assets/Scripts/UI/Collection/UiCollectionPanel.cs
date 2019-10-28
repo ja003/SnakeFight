@@ -69,21 +69,3 @@ public class UiCollectionPanel : MonoBehaviour
 
 
 
-public class CollectionItem
-{
-	public int id;
-	public int amount;
-	internal Sprite icon;
-
-	public CollectionItem(int id, int amount, Sprite icon)
-	{
-		this.id = id;
-		this.amount = amount;
-		this.icon = icon;
-	}
-
-	internal void AddAmount(int pAmount)
-	{
-		amount += pAmount;
-	}
-}

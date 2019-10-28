@@ -13,6 +13,7 @@ public abstract class ConfigCollectionItem : ScriptableObject
 public class ConfigItem : ConfigCollectionItem
 {
 	public EItemId id;
+	public UsableItem usable;
 
 	public override int GetId()
 	{

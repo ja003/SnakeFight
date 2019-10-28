@@ -15,10 +15,10 @@ public abstract class CollectionManager : MonoBehaviour
 
 	abstract protected List<ConfigCollectionItem> GetBaseConfigs();
 	
-	protected CollectionItem GenerateItem(int pId, int pAmount)
+	/*protected CollectionItem GenerateItem(int pId, int pAmount)
 	{
 		ConfigCollectionItem config = configs.Find(a => a.GetId() == pId);
 		CollectionItem item = new CollectionItem(pId, pAmount, config.icon);
 		return item;
-	}
+	}*/
 }

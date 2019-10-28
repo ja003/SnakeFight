@@ -18,27 +18,3 @@ public class UiPowerUpPanel : UiCollectionPanel
 
 
 
-public class PowerUp : CollectionItem
-{
-
-	public PowerUp(EPowerUpId id, int amount, Sprite icon):  base((int)id, amount, icon)
-	{
-	}
-	
-	public static PowerUp Convert(CollectionItem pItem)
-	{
-		return new PowerUp((EPowerUpId)pItem.id, pItem.amount, pItem.icon);
-	}
-}
-
-public enum EPowerUpId
-{
-	None,
-	Specal,
-	Specal2,
-}
-
-public enum EPowerUpType
-{
-
-}

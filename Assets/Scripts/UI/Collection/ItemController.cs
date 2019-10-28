@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class ItemController : CollectionController
 {
-	private PlaygroundField target;
+	//private PlaygroundField target;
 
 	public ItemController(Snake pOwner, UiCollectionPanel pUiPanel, UiPanelAction pUiAction) : base(pOwner, pUiPanel, pUiAction)
 	{
@@ -28,19 +28,14 @@ public class ItemController : CollectionController
 
 	public override void Evaluate()
 	{
-		Debug.Log("Item Evaluate");
-		if(target == null)
-		{
-			//Debug.Log($"{id} doesnt attack");
-			return;
-		}
 		Debug.Log($"{owner.Id} EvaluateItem");
-		target.bodyPart?.OnAttacked(10);
+		//target.bodyPart?.OnAttacked(10);
+		ActiveItem?.Evaluate();
 
-		DeselectItem();
+		DeselectItem(); //should deselect itself?
 	}
 
-	internal void EvaluateItem(Snake pOwner, PlaygroundField pTarget)
+	/*internal void EvaluateItem(Snake pOwner, PlaygroundField pTarget)
 	{
 		if(pTarget == null)
 		{
@@ -50,11 +45,18 @@ public class ItemController : CollectionController
 		Debug.Log($"{pOwner.Id} EvaluateItem");
 		pTarget.bodyPart?.OnAttacked(10);
 		pTarget = null;
+	}*/
+
+	public override void DeselectItem()
+	{
+		ActiveItem?.SetSelected(false);
+		base.DeselectItem();
 	}
 
 	protected override void OnItemSelected(int pItemId)
 	{
 		base.OnItemSelected(pItemId);
+		ActiveItem?.SetSelected(true);
 		SetTarget(null);
 		Debug.Log($"{owner} OnItemSelected {(EItemId)pItemId}");
 
@@ -66,9 +68,11 @@ public class ItemController : CollectionController
 
 		Debug.Log($"{owner} SetTarget {pTargetField} | {isItemActive}");
 
-		target?.SetSelected(false);
-		target = pTargetField;
-		target?.SetSelected(isItemActive);
+		ActiveItem?.SetTarget(pTargetField);
+
+		//target?.SetSelected(false);
+		//target = pTargetField;
+		//target?.SetSelected(isItemActive);
 
 		uiAction.OnSetTarget((Item)ActiveItem, pTargetField);
 	}

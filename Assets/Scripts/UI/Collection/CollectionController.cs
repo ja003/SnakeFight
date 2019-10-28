@@ -27,7 +27,7 @@ public abstract class CollectionController
 		uiAction = pUiAction;
 	}
 	
-	public void DeselectItem()
+	public virtual void DeselectItem()
 	{
 		if(!owner.IsLocal)
 			return;

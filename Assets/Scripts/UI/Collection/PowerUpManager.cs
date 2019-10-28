@@ -11,8 +11,10 @@ public class PowerUpManager : CollectionManager
 	
 	public PowerUp GeneratePowerUp(EPowerUpId pId, int pAmount)
 	{
-		CollectionItem item = GenerateItem((int)pId, pAmount);
-		return PowerUp.Convert(item);
+		ConfigPowerUp config = powerUpConfigs.Find(a => a.id == pId);
+		//UsableItem usable = itemUsables.Find(a => a.id == pId);
+		PowerUp powerUp = new PowerUp(config, pAmount);
+		return powerUp;
 	}
 	
 	protected override List<ConfigCollectionItem> GetBaseConfigs()

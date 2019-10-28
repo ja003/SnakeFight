@@ -15,6 +15,12 @@ public class Snake : MonoBehaviour
 	private BodyPart tail => bodyParts.Count > 0 ? bodyParts[bodyParts.Count - 1] : null;
 
 	public int Id { get; private set; }
+
+	internal Vector3 GetHeadPosition()
+	{
+		return head.transform.position;
+	}
+
 	public bool IsLocal { get; internal set; }
 
 	private NetworkMessanger networkMessanger;
@@ -67,6 +73,7 @@ public class Snake : MonoBehaviour
 	internal void AddItem(Item pItem)
 	{
 		itemController.AddItem(pItem);
+		pItem.SetOwner(this);
 	}
 
 	internal void AddPowerUp(PowerUp pPowerUp)

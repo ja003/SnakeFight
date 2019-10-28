@@ -63,7 +63,7 @@ public class Game : MonoBehaviour
 			//newSnake.AddPowerUp(powerUpManager.GeneratePowerUp(EPowerUpId.Specal2, 1));
 			snakes.Add(newSnake);
 		}
-		
+
 		localSnake = GetSnake(1);
 
 		snakes[1].AddItem(itemManager.GenerateItem(EItemId.Gun, 1));
@@ -169,21 +169,24 @@ public class Game : MonoBehaviour
 		{
 			snake.EvaluateMove();
 		}
-		yield return new WaitForSeconds(1);
+
+		const float evaluation_delay = 0.2f;
+
+		yield return new WaitForSeconds(evaluation_delay);
 
 		Debug.Log("Evaluate - ITEM");
 		foreach(Snake snake in snakes)
 		{
 			snake.EvaluateItem();
 		}
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(evaluation_delay);
 
 		Debug.Log("Evaluate - POWERUP");
 		foreach(Snake snake in snakes)
 		{
 			snake.EvaluatePowerUp();
 		}
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(evaluation_delay);
 
 		Debug.Log("Evaluation - FINISHED");
 		foreach(Snake snake in snakes)
